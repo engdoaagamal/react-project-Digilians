@@ -6,12 +6,7 @@ function AllStudent() {
 
   const navigate = useNavigate();
 
-
-
-
-
-
-  // ✅ DELETE FUNCTION HERE
+ 
   const handleDelete = async (id) => {
     const token = localStorage.getItem("token");
 
@@ -56,7 +51,7 @@ function AllStudent() {
           <div className="col-md-4 mb-4" key={item._id}>
             <div className="card shadow">
 
-              {/* Image */}
+              
               <img
                 src={`http://localhost:5000/${item.profileimage}`}
                 className="card-img-top"

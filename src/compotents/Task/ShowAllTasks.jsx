@@ -42,7 +42,10 @@ function ShowAllTasks() {
                   onClick={() => navigate(`/TaskDetails/${t._id}`)}>
                   View
                 </button>
-
+                <button className="btn btn-info btn-sm m-2"
+                  onClick={() => navigate(`/TaskDetails/${t._id}`)}>
+                 Show   
+                </button>
                 <button className="btn btn-warning btn-sm"
                   onClick={() => navigate(`/UpdateTask/${t._id}`)}>
                   Edit

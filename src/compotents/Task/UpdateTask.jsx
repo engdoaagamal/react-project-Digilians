@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import API from "../../API";
 
 function UpdateTask() {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const [task, setTask] = useState({
     title: "",
@@ -17,49 +18,104 @@ function UpdateTask() {
 
   useEffect(() => {
     const fetch = async () => {
-      const res = await API.get(`/getTask/${id}`);
-      setTask({
-        ...res.data.data,
-        deadline: res.data.data.deadline?.split("T")[0]
-      });
+      try {
+        const res = await API.get(`/getoneTaskbyid/${id}`);
 
-      const std = await API.get("/getAllstudent");
-      setStudents(std.data.data);
+        const t = res.data.data;
+
+        setTask({
+          title: t.title || "",
+          description: t.description || "",
+          deadline: t.deadline ? t.deadline.split("T")[0] : "",
+          status: t.status || "Pending",
+          Student_id: t.Student_id?._id || t.Student_id || ""
+        });
+
+        const std = await API.get("/getAllstudent");
+        setStudents(std.data.data);
+
+      } catch (err) {
+        console.log(err);
+        alert("Error loading task");
+      }
     };
 
     fetch();
-  }, []);
+  }, [id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await API.put(`/updateTask/${id}`, task);
-    alert("Updated ✅");
+
+    try {
+      await API.put(`/updatetask/${id}`, task);
+
+      alert("Updated ✅");
+      navigate(`/TaskDetails/${id}`); // أو أي صفحة عندك
+
+    } catch (err) {
+      console.log(err.response?.data);
+      alert("Error ❌");
+    }
   };
 
   return (
     <div className="container mt-4">
-      <h2>Update Task</h2>
+      <h2 className="text-center mb-4">Update Task</h2>
 
-      <form onSubmit={handleSubmit}>
-        <input className="form-control mb-2" value={task.title}
-          onChange={(e) => setTask({ ...task, title: e.target.value })} />
+      <form onSubmit={handleSubmit} className="card p-4 shadow">
 
-        <textarea className="form-control mb-2" value={task.description}
-          onChange={(e) => setTask({ ...task, description: e.target.value })} />
+        <input
+          className="form-control mb-2"
+          placeholder="Title"
+          value={task.title}
+          onChange={(e) => setTask({ ...task, title: e.target.value })}
+        />
 
-        <input type="date" className="form-control mb-2"
+        <textarea
+          className="form-control mb-2"
+          placeholder="Description"
+          value={task.description}
+          onChange={(e) => setTask({ ...task, description: e.target.value })}
+        />
+
+        <input
+          type="date"
+          className="form-control mb-2"
           value={task.deadline}
-          onChange={(e) => setTask({ ...task, deadline: e.target.value })} />
+          onChange={(e) => setTask({ ...task, deadline: e.target.value })}
+        />
 
-        <select className="form-control mb-2"
+        <select
+          className="form-control mb-2"
           value={task.Student_id}
-          onChange={(e) => setTask({ ...task, Student_id: e.target.value })}>
+          onChange={(e) => setTask({ ...task, Student_id: e.target.value })}
+        >
+          <option value="">Select Student</option>
           {students.map(s => (
-            <option key={s._id} value={s._id}>{s.name}</option>
+            <option key={s._id} value={s._id}>
+              {s.name}
+            </option>
           ))}
         </select>
 
-        <button className="btn btn-primary w-100">Update</button>
+        <select
+          className="form-control mb-3"
+          value={task.status}
+          onChange={(e) => setTask({ ...task, status: e.target.value })}
+        >
+          <option value="Pending">Pending</option>
+          <option value="Done">Done</option>
+        </select>
+
+        <button className="btn btn-primary  mx-auto w-75">
+          Update Task
+        </button>
+       
+        <button className="btn btn-success mt-3 mx-auto w-75"
+          onClick={() => navigate("/ShowAllTasks")}
+        >
+          Cancel
+        </button>
       </form>
     </div>
   );

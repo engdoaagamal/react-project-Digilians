@@ -285,7 +285,7 @@ function UpdateProject() {
                 <button className="btn btn-primary mt-3 mx-1 w-50">
                     Update Project
                 </button>
-                <button className="btn btn-success mt-3 mx-1 w-20"
+                <button className="btn btn-success mt-3 mx-1 w-25"
                     onClick={() => navigate("/ShowAllprojects")}
                 >
                     Cancel
